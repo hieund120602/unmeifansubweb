@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unmei Fansub - Kho phim Tokusatsu</title>
+  <style>
+    :root{
+      --accent:#ff004c;
+      --glass-bg: rgba(20,20,20,0.45);
+      --glass-strong: rgba(255,255,255,0.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background:#000;
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* ===== Header ===== */
+    header{
+      position:fixed;
+      top:0; left:0; right:0;
+      height:64px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 30px;
+      background:var(--glass-bg);
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      z-index:1200;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand img{
+      width:46px; height:46px; border-radius:50%;
+      object-fit:cover; border:2px solid #fff;
+    }
+    .brand .name{
+      font-weight:700; color:var(--accent); letter-spacing:0.2px;
+    }
+
+    nav{ /* container for menu */
+      display:flex; align-items:center;
+      gap: 20px;
+    }
+
+    /* top-level menu */
+    nav > ul{
+      list-style:none; display:flex; gap:18px; margin:0; padding:0;
+      align-items:center;
+    }
+    nav a{
+      color:#fff; text-decoration:none; display:inline-block; padding:8px 6px;
+      font-weight:600; font-size:15px;
+    }
+    nav a:hover{ color:var(--accent); }
+
+    /* make each li relative so its submenu is positioned to it */
+    nav li{ position:relative; }
+
+    /* ===== First-level dropdown (submenu of "Danh mục") ===== */
+    nav ul li > ul{
+      /* hidden by default */
+      position:absolute;
+      top:100%; /* directly under the li, no vertical gap */
+      left:0;
+      min-width:220px;
+      background:rgba(8,8,8,0.96);
+      border-radius:8px;
+      padding:8px 0;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      display:none;
+      z-index:1100;
+    }
+    /* show when hovering/focus within parent li */
+    nav ul li:hover > ul,
+    nav ul li:focus-within > ul {
+      display:block;
+    }
+
+    /* items inside first-level dropdown */
+    nav ul li > ul > li{
+      padding:0;
+      margin:0;
+      white-space:nowrap;
+    }
+    nav ul li > ul > li > a{
+      display:block;
+      padding:10px 16px;
+      color:#fff;
+      font-weight:600;
+      font-size:14px;
+    }
+    nav ul li > ul > li > a:hover{ background: rgba(255,0,76,0.08); color:var(--accent); }
+
+    /* ===== Second-level dropdown (submenu of Kamen Rider etc.) ===== */
+    /* place the child submenu to the right of its parent item, aligned to top (no gaps) */
+    nav ul li > ul > li { position:relative; }
+    nav ul li > ul > li > ul {
+      position:absolute;
+      top:0;
+      left:100%;
+      min-width:220px;
+      display:none;
+      background:rgba(8,8,8,0.96);
+      border-radius:8px;
+      padding:8px 0;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      z-index:1200;
+    }
+    /* show when hovering over parent item */
+    nav ul li > ul > li:hover > ul,
+    nav ul li > ul > li:focus-within > ul {
+      display:block;
+    }
+
+    /* second-level items */
+    nav ul li > ul > li > ul > li > a{
+      display:block;
+      padding:10px 16px;
+      color:#fff;
+      font-size:14px;
+    }
+    nav ul li > ul > li > ul > li > a:hover{ background: rgba(255,0,76,0.08); color:var(--accent); }
+
+    /* small arrow indicators */
+    .has-children > a::after {
+      content: " ▶";
+      font-size:12px;
+      margin-left:6px;
+      opacity:0.8;
+    }
+    nav > ul > li > a.dropdown-indicator::after{
+      content: " ▼";
+      font-size:12px;
+      margin-left:6px;
+    }
+
+    /* ===== Responsive: mobile toggles ===== */
+    .menu-toggle{
+      display:none;
+      background:transparent;border:0;color:#fff;font-size:20px;
+    }
+    @media (max-width:900px){
+      header{ padding:10px 18px; }
+      .menu-toggle{ display:inline-block; }
+      nav{ position:fixed; top:64px; right:0; background:rgba(0,0,0,0.95);
+            height:calc(100vh - 64px); width:280px; transform:translateX(100%);
+            transition:transform .28s ease; padding:18px; flex-direction:column;}
+      nav.open{ transform:translateX(0); }
+      nav > ul{ flex-direction:column; gap:8px; }
+      nav ul li > ul, nav ul li > ul > li > ul{ position:relative; top:0; left:0; display:none;
+          box-shadow:none; padding-left:8px; background:transparent; min-width:unset; border-radius:0;}
+      nav ul li.open > ul{ display:block; }
+    }
+
+    /* ===== Hero / Banner ===== */
+    .hero{
+      height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      text-align:center;
+      background-image: url('https://pbs.twimg.com/media/Gfqe8L9XIAA61m8?format=jpg&name=4096x4096');
+      background-size:cover; background-position:center;
+      position:relative;
+      padding:0 20px;
+      margin-top:64px;
+    }
+    .hero::before{ content:""; position:absolute; inset:0;
+      background: linear-gradient(to top, rgba(0,0,0,0.82), rgba(0,0,0,0.18));}
+    .hero .inner{ position:relative; z-index:10; max-width:960px; }
+    .hero .tag{ display:inline-block; background:var(--accent); padding:8px 14px; border-radius:20px; font-weight:700; color:#fff; margin-bottom:18px;}
+    .hero h1{ font-size:48px; line-height:1.05; margin:8px 0; text-transform:uppercase; font-weight:800;}
+    .hero h1 span{ color:var(--accent); }
+    .hero p{ color:#ddd; font-size:18px; margin:14px 0 22px; }
+    .hero .cta{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+    .btn{
+      padding:12px 22px; border-radius:28px; font-weight:700; cursor:pointer; border:0;
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .btn.primary{ background:linear-gradient(45deg,var(--accent), #ff3385); color:#fff; box-shadow:0 8px 30px rgba(255,0,76,0.2);}
+    .btn.ghost{ background:rgba(255,255,255,0.08); color:#fff; }
+
+    /* ===== Categories grid (cards) ===== */
+    .categories{
+      padding:64px 40px;
+      background:#0a0a0a;
+      display:grid;
+      gap:20px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+    .cat{
+      background:var(--glass-strong);
+      padding:18px;
+      border-radius:14px;
+      text-align:center;
+      transition:transform .22s ease, box-shadow .22s ease;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .cat:hover{ transform:translateY(-6px); box-shadow:0 12px 30px rgba(255,0,76,0.14); }
+    .cat img{ width:64px; height:64px; object-fit:contain; margin-bottom:10px; }
+    .cat p{ font-weight:700; color:#fff; margin:0; }
+
+    /* ===== Footer ===== */
+    footer{ padding:18px 24px; text-align:center; color:#bdbdbd; background:#000; }
+
+    /* small helpers */
+    .sr-only{ position:absolute; left:-9999px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" aria-label="Unmei Fansub">
+      <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/493982193_1225359182925561_5631026613550888118_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeG48CgwaJfPu3ojfV6OegZoVjCdar75erpWMJ1qvvl6uhrada7I9u_PxsTVMAHZr8LyTce7TBYUmMf0WI8eNsln&_nc_ohc=bsybe-ScLTIQ7kNvwHBNFYN&_nc_oc=AdkyF7DHCOUEzrQsTy0aNDEqhhVxv6UK0GuOs6mvo82Ce8EMg9MjxCpwxDZBpN1976wDpWPSRJbyvDDsXt6vfFu1&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=5kXgfWPIUzyiXC75BLQWkw&oh=00_Afa5x-nH23eBR6DAPUoQUFqVORx1QSyQKQEKscZ2jVRbrw&oe=68BDB411" alt="Unmei Fansub logo">
+      <div class="name">Unmei Fansub</div>
+    </div>
+
+    <button class="menu-toggle" aria-label="Mở menu" title="Mở menu">☰</button>
+
+    <nav id="main-nav" aria-label="Primary">
+      <ul>
+        <li><a href="#">Trang chủ</a></li>
+
+        <!-- DANH MỤC (first-level) -->
+        <li>
+          <a href="#" class="dropdown-indicator">Danh mục</a>
+          <ul>
+            <!-- Kamen Rider (has submenu) -->
+            <li class="has-children">
+              <a href="#">Kamen Rider</a>
+              <ul>
+                <li><a href="#">Kamen Rider 1</a></li>
+                <li><a href="#">Kamen Rider 2</a></li>
+                <li><a href="#">RW-06 Gavv</a></li>
+                <li><a href="#">RW-05 Gotchard</a></li>
+              </ul>
+            </li>
+
+            <!-- Super Sentai -->
+            <li class="has-children">
+              <a href="#">Super Sentai</a>
+              <ul>
+                <li><a href="#">Sentai 1</a></li>
+                <li><a href="#">Sentai 2</a></li>
+              </ul>
+            </li>
+
+            <!-- Power Rangers -->
+            <li class="has-children">
+              <a href="#">Power Rangers</a>
+              <ul>
+                <li><a href="#">PR 1</a></li>
+                <li><a href="#">PR 2</a></li>
+              </ul>
+            </li>
+
+            <!-- Metal Hero -->
+            <li class="has-children">
+              <a href="#">Metal Hero</a>
+              <ul>
+                <li><a href="#">Metal Hero 1</a></li>
+                <li><a href="#">Metal Hero 2</a></li>
+              </ul>
+            </li>
+
+            <li class="has-children">
+              <a href="#">Garo</a>
+              <ul>
+                <li><a href="#">Garo 1</a></li>
+                <li><a href="#">Garo 2</a></li>
+              </ul>
+            </li>
+
+            <li class="has-children">
+              <a href="#">Ultraman</a>
+              <ul>
+                <li><a href="#">Ultraman 1</a></li>
+                <li><a href="#">Ultraman 2</a></li>
+              </ul>
+            </li>
+
+            <li class="has-children">
+              <a href="#">Một số bộ Toku khác</a>
+              <ul>
+                <li><a href="#">Toku 1</a></li>
+                <li><a href="#">Toku 2</a></li>
+              </ul>
+            </li>
+
+            <li class="has-children">
+              <a href="#">Anime</a>
+              <ul>
+                <li><a href="#">Anime 1</a></li>
+                <li><a href="#">Anime 2</a></li>
+              </ul>
+            </li>
+
+            <li class="has-children">
+              <a href="#">Drama</a>
+              <ul>
+                <li><a href="#">Drama 1</a></li>
+                <li><a href="#">Drama 2</a></li>
+              </ul>
+            </li>
+
+            <li class="has-children">
+              <a href="#">MV</a>
+              <ul>
+                <li><a href="#">MV 1</a></li>
+                <li><a href="#">MV 2</a></li>
+              </ul>
+            </li>
+
+          </ul>
+        </li>
+
+        <li><a href="#">Giới thiệu</a></li>
+        <li><a href="#">Liên hệ</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <main>
+    <section class="hero" role="banner">
+      <div class="inner">
+        <div class="tag">Kho phim Tokusatsu miễn phí</div>
+        <h1>XEM <span>PHIM TOKUSATSU</span> CÙNG CỘNG ĐỒNG</h1>
+        <p>Unmei Fansub chia sẻ phụ đề Việt cho mọi người — phi lợi nhuận, vì đam mê.</p>
+        <div class="cta">
+          <button class="btn primary">🎬 KHÁM PHÁ NGAY</button>
+          <button class="btn ghost">▶️ XEM TRAILER</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories" aria-label="Danh mục">
+      <!-- Note: replace src with actual logo images or leave placeholders -->
+      <div class="cat"><img src="https://via.placeholder.com/64?text=KR" alt="Kamen Rider"><p>Kamen Rider</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=SS" alt="Super Sentai"><p>Super Sentai</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=PR" alt="Power Rangers"><p>Power Rangers</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=MH" alt="Metal Hero"><p>Metal Hero</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=GR" alt="Garo"><p>Garo</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=UM" alt="Ultraman"><p>Ultraman</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=TK" alt="Toku khác"><p>Một số bộ Toku khác</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=AN" alt="Anime"><p>Anime</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=DR" alt="Drama"><p>Drama</p></div>
+      <div class="cat"><img src="https://via.placeholder.com/64?text=MV" alt="MV"><p>MV</p></div>
+    </section>
+  </main>
+
+  <footer>© 2025 Unmei Fansub — chia sẻ vì cộng đồng Tokusatsu</footer>
+
+  <script>
+    // Mobile menu toggle
+    const toggleBtn = document.querySelector('.menu-toggle');
+    const nav = document.getElementById('main-nav');
+
+    toggleBtn.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+
+    // For mobile: allow opening submenus by tapping parent items
+    // When viewport is narrow, convert has-children li to toggle open class on click
+    function setupMobileSubmenu() {
+      const mql = window.matchMedia('(max-width:900px)');
+      const parentItems = document.querySelectorAll('nav li.has-children');
+
+      function enableToggle() {
+        parentItems.forEach(li => {
+          li.removeEventListener('click', li._toggleHandler);
+          li._toggleHandler = function (e) {
+            // if click on direct link, prevent navigation and toggle submenu
+            e.preventDefault();
+            e.stopPropagation();
+            li.classList.toggle('open');
+          };
+          li.addEventListener('click', li._toggleHandler);
+        });
+      }
+      function disableToggle() {
+        parentItems.forEach(li => {
+          if (li._toggleHandler) {
+            li.removeEventListener('click', li._toggleHandler);
+            li._toggleHandler = null;
+            li.classList.remove('open');
+          }
+        });
+      }
+
+      function check(e) {
+        if (e.matches) enableToggle(); else disableToggle();
+      }
+      mql.addListener(check);
+      check(mql);
+    }
+    setupMobileSubmenu();
+
+    // Close nav when clicking outside (mobile)
+    document.addEventListener('click', (e) => {
+      const isClickInside = nav.contains(e.target) || toggleBtn.contains(e.target);
+      if (!isClickInside && nav.classList.contains('open')) nav.classList.remove('open');
+    });
+
+    // Optional: close opened submenu on ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('nav li.open').forEach(li => li.classList.remove('open'));
+        if (nav.classList.contains('open')) nav.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
